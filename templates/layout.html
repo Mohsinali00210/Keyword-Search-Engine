@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Search Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .user-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        color: #5d78bd;
+        font-family: 'Segoe UI', sans-serif;
+      }
+      
+      .user-navbar.guest {
+        background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        color:white;
+        font-size: 35px;
+      }
+      
+      .user-navbar.logged-in {
+        background: transparent;
+        box-shadow: none;
+      }
+      
+  </style>
+
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        {% if username %}
+        <div id="sidebar" class="sidebar expanded d-flex flex-column p-2">
+          <button id="toggleSidebar" class="sidebar-toggle align-self-end">☰</button>
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+              <a href="{{ url_for('searchhistory')}}" class="nav-link"><span class="nav-icon">📜</span> <span class="nav-text">History</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('upload_file')}}" class="nav-link"><span class="nav-icon">📤</span> <span class="nav-text">Upload Document</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('home')}}" class="nav-link"><span class="nav-icon">🔍︎</span> <span class="nav-text">Search Document</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('profile')}}" class="nav-link"><span class="nav-icon">🙎🏻‍♂️</span> <span class="nav-text">Profile</span></a>
+            </li>
+            
+           
+          </ul>
+        </div>
+        <script>
+          const sidebar = document.getElementById('sidebar');
+          const mainContent = document.getElementById('main');
+          const toggleButton = document.getElementById('toggleSidebar');
+        
+          toggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            sidebar.classList.toggle('expanded');
+            mainContent.classList.toggle('collapsed');
+          });
+        </script>
+        {% endif %}
+        <div id="main" class=" flex-fill ">
+          <nav class="user-navbar {% if username %}logged-in{% else %}guest{% endif %}">
+
+                <div class="logo">Search Engine</div>
+                <div class="nav-buttons">
+                    {% if username %}
+                        <span class="welcome-msg">Welcome, {{ username }}!</span>
+                        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="btn">Register</a>
+                        <a href="{{ url_for('login') }}" class="btn">Login</a>
+                    {% endif %}
+                </div>
+            </nav>
+            
+            <div id="successMessage" style="display: none; background-color: #4CAF50; color: white; padding: 10px; text-align: center;"></div>
+        
+        
+    {% block content %}
+    {% endblock %}
+        
+            
+            
+          </div>
+    
+    </div>
+  
+</body>
+</html>
+
+
+<script>
+    
+</script>

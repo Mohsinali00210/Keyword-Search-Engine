@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+    <nav>
+        <div class="logo">Search Engine</div>
+    </nav>
+    <div id="successMessage" style="display: none; background-color: #4CAF50; color: white; padding: 10px; text-align: center;"></div>
+
+    <main class="container">
+        <h2 class="form-heading">
+            <i class="fas fa-sign-in-alt"></i> Login to Your Account
+          </h2>
+          
+
+        
+        <div class="form-container login-form">
+            <h2 class="text-b">Login</h2>
+
+            {% if error %}
+            <script>
+                  function showMessage(message, isSuccess) {
+                        let msgDiv = document.getElementById("successMessage");
+                        msgDiv.innerText = message;
+                        msgDiv.style.display = "block";
+                        msgDiv.style.backgroundColor = isSuccess ? "#4CAF50" : "red";
+                    
+                        setTimeout(() => {
+                            msgDiv.style.display = "none";
+                            if (isSuccess) location.reload();
+                        }, 2000);
+                    } 
+                    showMessage('{{error.message}}',false)
+            </script>
+                
+            {% endif %}
+            <form action="/login" method="POST">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" name="email" required>
+    
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" required>
+    
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="footer-content">
+          <p>&copy; 2025 Keyword-Based Search Engine. All rights reserved.</p>
+          <p>Developed by Final Year BSCS Student | Supervised by Sir Muhammad Ilyas</p>
+        </div>
+      </footer>
+
+
+    
+
+    <!-- JavaScript Alert for Registration -->
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let alertMessage = "";
+    
+            if (urlParams.get("alert") === "registration_success") {
+                alertMessage = "Registration Successful! Please log in.";
+            } else if (urlParams.get("alert") === "user_exists") {
+                alertMessage = "Username or Email already exists!";
+            } else if (urlParams.get("alert") === "db_error") {
+                alertMessage = "Database error occurred. Try again later.";
+            } else if (urlParams.get("alert") === "invalid_login") {
+                alertMessage = "Invalid email or password!";
+            } else if (urlParams.get("alert") === "login_success") {
+                alertMessage = "Welcome! You are now logged in.";
+            } else if (urlParams.get("alert") === "login_first") {
+                alertMessage = "Please login first!";
+            } else if (urlParams.get("alert") === "logout") {
+                alertMessage = "You have been logged out.";
+            }
+    
+            if (alertMessage) {
+                alert(alertMessage);
+                history.replaceState({}, document.title, window.location.pathname); // ✅ URL cleanup
+            }
+        };
+    </script>
+    
+</body>
+</html>

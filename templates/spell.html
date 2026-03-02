@@ -1,0 +1,365 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>CKEditor Spell Checker</title>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+</head>
+<body>
+    <h2>CKEditor with Spell Check (SCAYT)</h2>
+
+    <form method="POST" action="/">
+        <textarea name="editor1" id="editor1" rows="10" cols="80">
+            Type here with some misspelled words like helloo or wurld.
+        </textarea>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        CKEDITOR.replace('editor1', {
+            scayt_autoStartup: true,
+            scayt_sLang: 'en_US',
+            scayt_maxSuggestions: 5,
+            extraPlugins: 'scayt',
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Spell Checker</title>
+    <style>
+        #editor {
+    width: 80%;
+    min-height: 150px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.misspelled {
+    /* background-color: #fdd; */
+    border-bottom: 1px dotted red;
+    cursor: pointer;
+    text-decoration: underline;  /* Add underline */
+    text-decoration-color: red;  /* Set the underline color to red */
+
+}
+
+.popup {
+    position: absolute;
+    background: white;
+    border: 1px solid #aaa;
+    padding: 5px;
+    z-index: 9999;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+}
+
+.popup-option {
+    padding: 4px;
+    cursor: pointer;
+}
+
+.popup-option:hover {
+    background-color: #f0f0f0;
+}
+
+.add-word {
+    font-style: italic;
+    color: #007700;
+}
+
+    </style>
+</head>
+<body>
+    <h2>Custom Spell Checker</h2>
+    <div id="editor" contenteditable="true" spellcheck="false">
+        Type some text with errorss or wrds.
+    </div>
+    <button onclick="checkSpelling()">Check Spelling</button>
+
+   
+    <script>
+        function checkSpelling() {
+            const editor = document.getElementById('editor');
+            const text = editor.innerText;
+
+            fetch('/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            })
+            .then(res => res.json())
+            .then(misspelledWords => {
+                highlightWords(editor, misspelledWords);
+            });
+        }
+
+        function highlightWords(editor, errors) {
+            console.log(errors);
+            let text = editor.innerText;
+            console.log(text);
+            errors.forEach(error => {
+                const word = error.word;
+                const span = `<span class="misspelled" data-word="${word}" data-suggestions="${encodeURIComponent(JSON.stringify(error.suggestions))}">${word}</span>`;
+                const regex = new RegExp("\\b" + word + "\\b", "g");
+                text = text.replace(regex, span);
+            });
+            editor.innerHTML = text;
+        }
+
+        document.addEventListener('mouseover', function (e) {
+            if (e.target.classList.contains('misspelled')) {
+                showSuggestions(e.target);
+            }
+        });
+
+        function showSuggestions(el) {
+            removeSuggestions();
+
+            const suggestions = JSON.parse(decodeURIComponent(el.dataset.suggestions));
+            const popup = document.createElement("div");
+            popup.className = "popup";
+            popup.style.top = el.getBoundingClientRect().bottom + window.scrollY + "px";
+            popup.style.left = el.getBoundingClientRect().left + window.scrollX + "px";
+
+            suggestions.forEach(s => {
+                const option = document.createElement("div");
+                option.className = "popup-option";
+                option.textContent = s;
+                option.onclick = () => {
+                    el.outerHTML = s;
+                    popup.remove();
+                };
+                popup.appendChild(option);
+            });
+
+            const addBtn = document.createElement("div");
+            addBtn.className = "popup-option add-word";
+            addBtn.textContent = "Add to Dictionary";
+            addBtn.onclick = () => {
+                fetch('/add_word', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ word: el.dataset.word })
+                }).then(() => {
+                    el.outerHTML = el.dataset.word;
+                    popup.remove();
+                });
+            };
+            popup.appendChild(addBtn);
+
+            document.body.appendChild(popup);
+        }
+
+        function removeSuggestions() {
+            const existing = document.querySelector(".popup");
+            if (existing) existing.remove();
+        }
+
+        document.addEventListener("click", function (e) {
+            if (!e.target.classList.contains("misspelled") &&
+                !e.target.classList.contains("popup-option")) {
+                removeSuggestions();
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Check with Flask</title>
+    <style>
+        .misspelled {
+            background-color: #fdd;
+            border-bottom: 1px dotted red;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-color: red;
+        }
+
+        .suggestion-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .suggestion-menu li {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .suggestion-menu li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            visibility: hidden;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <textarea id="editor" rows="10" cols="30" placeholder="Type some text..."></textarea>
+    <div id="suggestionMenu" class="suggestion-menu"></div>
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const suggestionMenu = document.getElementById('suggestionMenu');
+        const tooltip = document.getElementById('tooltip');
+        let selectedWord = '';
+        editor.addEventListener('keydown', function(event) {
+        if (event.key === " " || event.key === "Spacebar") {
+            console.log('Space key pressed');
+            checkSpelling();
+        }
+    });
+        // Function to check spelling by sending the text to Flask backend
+        function checkSpelling() {
+            const text = editor.value;
+
+            fetch('/check-spelling', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                highlightMisspelledWords(data);
+            });
+        }
+
+        // Function to highlight misspelled words
+        function highlightMisspelledWords(suggestions) {
+            console.log(suggestions);
+            let highlightedText = editor.value;
+            const words = highlightedText.split(/\s+/);
+
+            words.forEach(word => {
+                if (suggestions[word]) {
+                    highlightedText = highlightedText.replace(word, `<span class="misspelled" data-word="${word}">${word}</span>`);
+                }
+            });
+
+            editor.innerHTML = highlightedText;
+        }
+
+        // Right-click context menu for suggestions
+        editor.addEventListener('contextmenu', function(event) {
+            event.preventDefault(); // Prevent default context menu
+
+            const target = event.target;
+            if (target.classList.contains('misspelled')) {
+                selectedWord = target.textContent;
+                const suggestions = getSuggestions(selectedWord);
+                suggestionMenu.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    li.onclick = function() {
+                        target.textContent = suggestion; // Replace with the suggestion
+                        suggestionMenu.style.display = 'none'; // Hide the menu
+                    };
+                    suggestionMenu.appendChild(li);
+                });
+
+                const addToDictItem = document.createElement('li');
+                addToDictItem.textContent = 'Add to dictionary';
+                addToDictItem.onclick = function() {
+                    addToDictionary(selectedWord); // Add the word to the dictionary
+                };
+                suggestionMenu.appendChild(addToDictItem);
+
+                suggestionMenu.style.left = `${event.pageX}px`;
+                suggestionMenu.style.top = `${event.pageY}px`;
+                suggestionMenu.style.display = 'block';
+            }
+        });
+
+        // Hide the suggestion menu when clicking anywhere else
+        document.addEventListener('click', function() {
+            suggestionMenu.style.display = 'none';
+        });
+
+        // Show tooltip on hover
+        editor.addEventListener('mouseover', function(event) {
+            if (event.target.classList.contains('misspelled')) {
+                const word = event.target.textContent;
+                const suggestions = getSuggestions(word);
+
+                tooltip.textContent = `Suggestions: ${suggestions.join(', ')}`;
+                tooltip.style.left = `${event.pageX + 5}px`;
+                tooltip.style.top = `${event.pageY + 5}px`;
+                tooltip.style.visibility = 'visible';
+            }
+        });
+
+        // Hide tooltip when mouse leaves
+        editor.addEventListener('mouseout', function(event) {
+            if (event.target.classList.contains('misspelled')) {
+                tooltip.style.visibility = 'hidden';
+            }
+        });
+
+        // Check spelling every time the input changes
+        editor.addEventListener('input', checkSpelling);
+
+        // Get suggestions from Flask backend
+        function getSuggestions(word) {
+            // In a real implementation, this would call the Flask backend to get suggestions for the word.
+            // But since this is a simulation, we will just show dummy suggestions here.
+            return ['hello', 'holla', 'helios']; // Example suggestions
+        }
+
+        // Add the selected word to the dictionary
+        function addToDictionary(word) {
+            fetch('/add-to-dictionary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ word })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Show confirmation message
+                suggestionMenu.style.display = 'none'; // Hide the menu
+            });
+        }
+    </script>
+
+</body>
+</html>

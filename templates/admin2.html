@@ -1,0 +1,140 @@
+{% extends "adminLayout.html" %}
+{% block content %}
+<style>
+  .dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+  }
+
+  .dashboard-box {
+    width: 250px;
+    height: 160px;
+    background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 15px;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .dashboard-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Full bottom-centered graph */
+  .graph-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+    margin-bottom: 40px;
+  }
+
+  .bar-graph-box {
+    background-color: #ffffff;
+    width: 95%;
+    max-width: 1100px;
+    height: 480px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    color: #0b2a77;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .bar-graph-box h4 {
+    font-size: 1.7rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .vertical-bar-graph {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 300px;
+    width: 100%;
+    gap: 15px;
+  }
+
+  .vertical-bar {
+    width: 12%;
+    background: linear-gradient(135deg, #5c6bc0, #8e99f3);
+    border-radius: 6px;
+    transition: height 0.3s ease;
+  }
+
+  .bar1 { height: 70%; }
+  .bar2 { height: 90%; }
+  .bar3 { height: 55%; }
+  .bar4 { height: 65%; }
+  .bar5 { height: 95%; }
+  .bar6 { height: 80%; }
+  .bar7 { height: 60%; }
+
+  .graph-labels {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  .graph-labels span {
+    font-size: 1rem;
+    color: #3e4e86;
+    font-weight: 500;
+  }
+  .dashboard-box{
+    background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+  }
+</style>
+
+<h2 class="text-center mt-3" style="color: #0b2a77;">Admin Dashboard</h2>
+
+<div class="dashboard-container">
+  <a href="{{ url_for('UserList') }}" class="dashboard-box">👤 View Users</a>
+  <a href="{{ url_for('UserCreate') }}" class="dashboard-box">➕ Add New User</a>
+  <a href="{{ url_for('DocumentList') }}" class="dashboard-box">📂 View Documents</a>
+  <a href="{{ url_for('backup') }}" class="dashboard-box">🔄 Backup Database</a>
+</div>
+
+<!-- Large Full-Width Graph at Bottom Center -->
+<!-- Final Full-width Graph at Bottom Center -->
+<div class="graph-container" style="margin-top: 180px; margin-bottom: 20px;">
+    <div class="bar-graph-box">
+      <h4>Weekly Document Upload Trends</h4>
+      <div class="vertical-bar-graph">
+        <div class="vertical-bar bar1"></div>
+        <div class="vertical-bar bar2"></div>
+        <div class="vertical-bar bar3"></div>
+        <div class="vertical-bar bar4"></div>
+        <div class="vertical-bar bar5"></div>
+        <div class="vertical-bar bar6"></div>
+        <div class="vertical-bar bar7"></div>
+      </div>
+      <div class="graph-labels">
+        <span>Mon</span>
+        <span>Tue</span>
+        <span>Wed</span>
+        <span>Thu</span>
+        <span>Fri</span>
+        <span>Sat</span>
+        <span>Sun</span>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

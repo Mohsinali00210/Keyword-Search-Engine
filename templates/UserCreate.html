@@ -1,0 +1,31 @@
+{% extends "adminLayout.html" %}
+{% block content %}
+<style>
+    .btn-primary{
+        background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+        border: #a9c1ff;
+    }
+    .btn-primary:hover{
+        background: #5f6ce7;
+    }
+
+</style>
+<h2>Add User</h2>
+<form method="POST" class="p-4 bg-white text-white rounded">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input class="form-control " type="text" name="username" id="username" placeholder="Username" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input class="form-control " type="email" name="email" id="email" placeholder="Email" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input class="form-control " type="password" name="password" id="password" placeholder="Password" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add User</button>
+    <a href="{{ url_for('UserList') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}

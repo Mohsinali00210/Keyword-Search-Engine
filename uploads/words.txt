@@ -1,0 +1,5 @@
+word, meaning, part_of_speech
+apple, a fruit, noun
+run, to move fast, verb
+book, a set of written pages, noun
+yummy

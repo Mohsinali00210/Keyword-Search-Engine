@@ -1,0 +1,52 @@
+{% extends "adminLayout.html" %}
+{% block content %}
+<style>
+      .btn-b {
+    padding: 5px 10px !important;
+    margin: 5px !important;
+    border: none;
+    background: linear-gradient(135deg, #6e7dff, #a9c1ff) !important;
+    color: white !important;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.btn-b{
+    text-decoration: none !important;
+}
+
+.btn-sm{
+    background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+    border: #a9c1ff;
+}
+</style>
+<div class="row mb-3 mt-3">
+    <div class="col d-flex align-items-center justify-content-between">
+        <h1 class="text-dark mb-0">Users</h1>
+        <a href="{{ url_for('UserCreate') }}" class="btn-b">Add New User</a>
+    </div>
+</div>
+<div class="table-responsive">
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr >
+                <th>ID</th><th>Username</th><th>Email</th><th>Password</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[2] }}</td>
+                <td>{{ user[3] }}</td>
+                <td>
+                    <a href="{{ url_for('UserUpdate', user_id=user[0]) }}" class="btn  btn-sm">Edit</a>
+                    <a href="{{ url_for('UserDelete', user_id=user[0]) }}" class="btn  btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

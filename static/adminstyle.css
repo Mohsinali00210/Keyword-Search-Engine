@@ -1,0 +1,108 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #dddfff;
+    color: #000000;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    background-color: #011052;
+    width: 240px;
+    transition: width 0.3s;
+    padding-top: 20px;
+  }
+
+  .sidebar.collapsed {
+    width: 60px;
+  }
+
+  .sidebar .toggle-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: block;
+    text-align: left;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 10px 0;
+  }
+
+  .sidebar ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar ul li:hover {
+    background-color: #333;
+  }
+
+  .main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .collapsed .sidebar-text {
+    display: none;
+  }
+
+  .table-container {
+    margin-top: 30px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1e1e1e;
+    color: #fff;
+  }
+  
+  table th,
+  table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+  
+  table th {
+    background-color: #2c2c2c;
+    font-weight: 600;
+  }
+  
+  table tr:hover {
+    background-color: #333;
+  }
+  
+
+  .btn-b {
+    padding: 5px 10px !important;
+    margin: 5px !important;
+    border: none;
+    background-color:#011052 !important;
+    color: white !important;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.btn-b{
+    text-decoration: none !important;
+}
+.bg-b{
+  background-color:#011052 !important;
+  color: white;
+}

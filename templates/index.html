@@ -1,0 +1,204 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<main class="container text-center">
+    <h2 class="heading">Keyword-Based Search Engine for Text Documents</h2>
+    <p>Upload, search, and retrieve documents efficiently</p>
+
+    <div class="search-container">
+        <div placeholder="Enter Keywords..." id="searchBoxx" contenteditable="true" spellcheck="false"></div>
+        <button class="btn-primary" id="searchBtn">Search</button>
+    </div>
+
+    <p class="login-msg">
+        {% if not username %}
+            You must <a href="{{ url_for('login') }}">login</a> to upload files.
+        {% endif %}
+    </p>
+
+    <h2 class="heading" id="resultsHeading" style="display: none;">Search Results</h2>
+
+    <table id="resultsTable" style="width: 100%; border-collapse: collapse; display: none;">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Snippet</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="results"></tbody>
+    </table>
+    <p id="noResults" style="display: none;">No results found.</p>
+</main>
+
+<div id="context-menu" class="context-menu">
+    <ul id="suggestions-list"></ul>
+    <hr>
+    <li id="add-to-dictionary">Add to Dictionary</li>
+</div>
+
+{% if not username %}
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2025 Keyword-Based Search Engine. All rights reserved.</p>
+        <p>Developed by Final Year BSCS Student | Supervised by Sir Muhammad Ilyas</p>
+    </div>
+</footer>
+{% endif %}
+
+<style>
+   
+</style>
+
+<script>
+document.getElementById("searchBtn").addEventListener("click", function () {
+    let query = document.getElementById("searchBoxx").innerText.trim();
+    if (!query) {
+        alert("Please enter a keyword to search.");
+        return;
+    }
+
+    fetch(`/search?query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            let resultsTable = document.getElementById("resultsTable");
+            let resultsBody = document.getElementById("results");
+            let noResults = document.getElementById("noResults");
+            let resultsHeading = document.getElementById("resultsHeading");
+
+            resultsBody.innerHTML = "";
+
+            if (data.results.length > 0) {
+                resultsHeading.style.display = "block";
+                resultsTable.style.display = "table";
+                noResults.style.display = "none";
+
+                data.results.forEach(result => {
+                    let row = `
+    <tr>
+        <td>${result.filename}</td>
+        <td>${result.snippet}</td>
+        <td>
+            <a href="/uploads/${result.filename}" download class="btn">Download</a>
+            <a href="/view/${result.filename}" class="btn">View</a>
+        </td>
+    </tr>`;
+
+                    
+                    resultsBody.innerHTML += row;
+                });
+            } else {
+                resultsHeading.style.display = "none";
+                resultsTable.style.display = "none";
+                noResults.style.display = "block";
+            }
+        })
+        .catch(error => console.error("Error:", error));
+});
+
+document.addEventListener("click", function () {
+    document.getElementById("context-menu").style.display = "none";
+});
+
+// Spell Checker
+const editor = document.getElementById("searchBoxx");
+editor.addEventListener('keydown', function (event) {
+    if (event.key === " " || event.key === "Spacebar") {
+        console.log('Space key pressed');
+        checkSpelling();
+    }
+});
+
+function checkSpelling() {
+    const text = editor.innerText;
+    fetch('/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+    })
+    .then(res => res.json())
+    .then(misspelledWords => {
+        highlightWords(editor, misspelledWords);
+    });
+}
+
+function moveCaretToEnd(el) {
+    el.focus();
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function highlightWords(editor, errors) {
+    let text = editor.innerText;
+    errors.forEach(error => {
+        const word = error.word;
+        const suggestionsText = error.suggestions.join(', ');
+        const span = `<span class="misspelled" title="Suggestions: ${suggestionsText}" data-word="${word}" data-suggestions="${encodeURIComponent(JSON.stringify(error.suggestions))}">${word}</span>`;
+        const regex = new RegExp("\\b" + word + "\\b", "g");
+        text = text.replace(regex, span);
+    });
+    editor.innerHTML = text;
+    moveCaretToEnd(editor);
+}
+
+document.addEventListener('contextmenu', function (e) {
+    if (e.target.classList.contains('misspelled')) {
+        e.preventDefault();
+        showSuggestions(e.target);
+    }
+});
+
+function showSuggestions(el) {
+    removeSuggestions();
+    const suggestions = JSON.parse(decodeURIComponent(el.dataset.suggestions));
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.style.top = el.getBoundingClientRect().bottom + window.scrollY + "px";
+    popup.style.left = el.getBoundingClientRect().left + window.scrollX + "px";
+
+    suggestions.forEach(s => {
+        const option = document.createElement("div");
+        option.className = "popup-option";
+        option.textContent = s;
+        option.onclick = () => {
+            el.outerHTML = s;
+            popup.remove();
+        };
+        popup.appendChild(option);
+    });
+
+    const addBtn = document.createElement("div");
+    addBtn.className = "popup-option add-word";
+    addBtn.textContent = "Add to Dictionary";
+    addBtn.onclick = () => {
+        fetch('/add_word', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ word: el.dataset.word })
+        }).then(() => {
+            el.outerHTML = el.dataset.word;
+            popup.remove();
+        });
+    };
+    popup.appendChild(addBtn);
+    document.body.appendChild(popup);
+}
+
+function removeSuggestions() {
+    const existing = document.querySelector(".popup");
+    if (existing) existing.remove();
+}
+
+document.addEventListener("click", function (e) {
+    if (!e.target.classList.contains("misspelled") &&
+        !e.target.classList.contains("popup-option")) {
+        removeSuggestions();
+    }
+});
+</script>
+
+{% endblock %}

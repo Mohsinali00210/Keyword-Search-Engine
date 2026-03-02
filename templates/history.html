@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block content %}
+
+        <main class="container text-center">
+           
+    
+            <h2 class="heading">Search History</h2>
+           
+            <table id="resultsTable" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Query</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="results">
+                    {% for item in history %}
+                    <tr>
+                        <td>{{ item[2] }}</td>
+                        <td>{{ item[1] }}</td>
+                        <td>{{ item[3] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- <p id="noResults" style="display: none;" >No results found.</p> -->
+        </main>
+    
+        
+   
+ 
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main');
+    const toggleButton = document.getElementById('toggleSidebar');
+  
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      sidebar.classList.toggle('expanded');
+      mainContent.classList.toggle('collapsed');
+    });
+  </script>
+
+<script>
+  
+
+
+// Display Success or Error Message
+function showMessage(message, isSuccess) {
+let msgDiv = document.getElementById("successMessage");
+msgDiv.innerText = message;
+msgDiv.style.display = "block";
+msgDiv.style.backgroundColor = isSuccess ? "#4CAF50" : "red";
+
+setTimeout(() => {
+    msgDiv.style.display = "none";
+    if (isSuccess) location.reload();
+}, 2000);
+}  
+
+</script>
+{% endblock %}
+   

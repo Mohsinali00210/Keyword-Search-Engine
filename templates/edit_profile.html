@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Search Engine</div>
+    </nav>
+    
+  
+    <div class="form-container">
+    <h2 class="text-b">Edit Profile</h2> 
+  
+
+    <form  method="POST" id="registerForm">
+        <label for="regUsername">Username</label>
+
+        <input type="text" name="username" value="{{ user[1] }}" required>
+
+        <label for="regEmail">Email</label>
+        <input type="email" name="email" value="{{ user[2] }}" required>
+
+        <label for="regPassword">Password</label>
+        <input type="password" name="password" value="{{ user[3] }}" required>
+
+        <button type="submit">update</button>
+    </form>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+          <p>&copy; 2025 Keyword-Based Search Engine. All rights reserved.</p>
+          <p>Developed by Final Year BSCS Student | Supervised by Sir Muhammad Ilyas</p>
+        </div>
+    </footer>
+
+    <script>
+        
+        </script>
+        
+</body>
+</html>

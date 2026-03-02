@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<main class="container text-center">
+    <div class="form-container2">
+        {% if username %}
+            <h2 class="upload-title">Upload a Text Document</h2>
+
+            <form id="uploadForm" enctype="multipart/form-data" class="upload-form">
+                <label for="fileInput" class="file-label">Choose a .txt or .csv file</label>
+                <input type="file" name="file" id="fileInput" class="file-input" required>
+                <button type="submit" class="upload-btn">Upload</button>
+            </form>
+        {% else %}
+            <p class="login-msg">You must <a href="{{ url_for('login') }}" class="login-link">login</a> to upload files.</p>
+        {% endif %}
+    </div>
+</main>
+
+
+        
+   
+ 
+
+
+<script>
+  
+
+
+// Display Success or Error Message
+function showMessage(message, isSuccess) {
+let msgDiv = document.getElementById("successMessage");
+msgDiv.innerText = message;
+msgDiv.style.display = "block";
+msgDiv.style.backgroundColor = isSuccess ? "#4CAF50" : "red";
+
+setTimeout(() => {
+    msgDiv.style.display = "none";
+    if (isSuccess) location.reload();
+}, 2000);
+}  
+
+</script>
+
+
+<script>
+        
+  // File Upload Handler
+  document.getElementById("uploadForm")?.addEventListener("submit", function(event) {
+      event.preventDefault();
+  
+      let fileInput = document.getElementById("fileInput");
+      let file = fileInput.files[0];
+  
+      if (!file) {
+          alert("Please select a file to upload.");
+          return;
+      }
+  
+      let allowedExtensions = [".txt", ".csv"];
+      let fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+  
+      if (!allowedExtensions.includes(fileExtension)) {
+          alert("Invalid file format! Only .txt and .csv files are allowed.");
+          return;
+      }
+  
+      let formData = new FormData();
+      formData.append("file", file);
+  
+      checkAndUploadFile(formData);
+  });
+  
+ 
+  function checkAndUploadFile(formData) {
+      fetch("/upload", {
+          method: "POST",
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === "exists") {
+              if (confirm("This file already exists. Do you want to overwrite it?")) {
+                  formData.append("overwrite", "true"); // Add overwrite flag
+  
+                  fetch("/upload", { // Same `/upload` endpoint handles overwriting now
+                      method: "POST",
+                      body: formData
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.status === "success") {
+                          showMessage("File uploaded successfully!", true);
+                      }
+                  });
+              } else {
+                  showMessage("File upload canceled.", false);
+              }
+          } else if (data.status === "success") {
+              showMessage("File uploaded successfully!", true);
+          }
+      })
+      .catch(error => console.error("Error:", error));
+  }
+  
+  // Display Success or Error Message
+  function showMessage(message, isSuccess) {
+      let msgDiv = document.getElementById("successMessage");
+      msgDiv.innerText = message;
+      msgDiv.style.display = "block";
+      msgDiv.style.backgroundColor = isSuccess ? "#4CAF50" : "red";
+  
+      setTimeout(() => {
+          msgDiv.style.display = "none";
+          if (isSuccess) location.reload();
+      }, 2000);
+  }  
+      
+      </script>
+{% endblock %}
+   

@@ -1,0 +1,10 @@
+Flask
+Jinja2
+Werkzeug
+itsdangerous
+click
+MarkupSafe
+# Note: Comes with Python stdlib; no need to install separately.
+
+Whoosh
+pyspellchecker

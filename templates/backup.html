@@ -1,0 +1,125 @@
+{% extends "adminLayout.html" %}
+{% block content %}
+
+<style>
+  .box-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+
+  .database-box {
+    width: 90%;
+    max-width: 900px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 12px 12px 20px rgba(0, 0, 0, 0.2); /* One-side shadow */
+    border-left: 5px solid #2a5298;
+  }
+
+  .database-box h2, .database-box h3 {
+    color: #0b2a77;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  input[type="file"] {
+    margin: 10px auto;
+    display: block;
+    padding: 8px;
+  }
+
+  .alert {
+    padding: 10px;
+    margin: 15px 0;
+    display: none;
+    border-radius: 5px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .success { background-color: #28a745; color: white; }
+  .error { background-color: #dc3545; color: white; }
+
+  .btn-b {
+    padding: 8px 16px;
+    margin: 8px;
+    border: none;
+    background: linear-gradient(135deg, #6e7dff, #a9c1ff);
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none !important;
+  }
+</style>
+
+<div class="box-wrapper">
+  <div class="database-box text-center">
+    <h2>Database Management</h2>
+
+    <div id="alert" class="alert"></div>
+
+    <button onclick="downloadFile('/export/sql', 'Export SQL Successful!','backup.sql')" class="btn-b">Export SQL</button>
+    <button onclick="downloadFile('/export/csv', 'Export CSV Successful!','backup.csv')" class="btn-b">Export CSV</button>
+
+    <h3>Import Database</h3>
+
+    <form id="importSqlForm">
+      <input type="file" name="file" id="importSqlFile" required>
+      <button type="button" onclick="uploadFile('/import/sql', 'importSqlFile')" class="btn-b">Import SQL</button>
+    </form>
+
+    <form id="importCsvForm">
+      <input type="file" name="file" id="importCsvFile" required>
+      <button type="button" onclick="uploadFile('/import/csv', 'importCsvFile')" class="btn-b">Import CSV</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function downloadFile(url, message, filename) {
+    fetch(url, { method: "GET" })
+      .then(response => response.blob())
+      .then(blob => {
+        let fileURL = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = fileURL;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showAlert(message, "success");
+      })
+      .catch(() => showAlert("Error occurred while downloading file!", "error"));
+  }
+
+  function uploadFile(url, fileInputId) {
+    let fileInput = document.getElementById(fileInputId);
+    let formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    fetch(url, { method: "POST", body: formData })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          showAlert(data.message, "success");
+        } else {
+          showAlert(data.message, "error");
+        }
+      })
+      .catch(() => showAlert("Error occurred while uploading file!", "error"));
+  }
+
+  function showAlert(message, type) {
+    let alertBox = document.getElementById("alert");
+    alertBox.textContent = message;
+    alertBox.className = `alert ${type}`;
+    alertBox.style.display = "block";
+    setTimeout(() => alertBox.style.display = "none", 3000);
+  }
+</script>
+
+{% endblock %}

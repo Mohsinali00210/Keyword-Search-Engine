@@ -1,0 +1,55 @@
+{% extends "adminLayout.html" %}
+{% block content %}
+<style>
+    .btn-b {
+  padding: 5px 10px !important;
+  margin: 5px !important;
+  border: none;
+  background-color:#011052 !important;
+  color: white !important;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.btn-b{
+  text-decoration: none !important;
+}
+.btn-b:hover{
+  background-color:#031876 !important;
+}
+.bg-b{
+background-color:#011052 !important;
+color: white;
+}
+.btn-sm{
+  background: linear-gradient(135deg, #6e7dff, #a9c1ff);;
+}
+</style>
+<!-- <a href="{{ url_for('UserCreate') }}" class="btn btn-success mb-3">Add New User</a> -->
+ <h1 class="text-dark mb-3 mt-3">Documents</h1>
+ <div class="table-responsive">
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Filename</th>
+            <th>Upload Date</th>
+            <th>Username</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+      
+        {% for u in uploads %}
+            <tr>
+                <td>{{ u[0] }}</td>
+                <td>{{ u[1] }}</td>
+                <td>{{ u[2] }}</td>
+                <td>{{ u[3] }}</td>
+                <td><a href="{{ url_for('DeleteDocument', id=u[0]) }}" class="btn btn-sm">Delete</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+ </div>
+
+</table>
+{% endblock %}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+    <nav>
+        <div class="logo">Search Engine</div>
+    </nav>
+    
+    <div id="successMessage" style="display: none; background-color: #4CAF50; color: white; padding: 10px; text-align: center;"></div>
+    <h2 class="form-heading2">
+        <i class="fas fa-user-plus"></i> Create Your Account
+      </h2>
+      
+
+    <div class="form-container">
+    <h2 class="text-b">Register</h2>
+    <form action="/register" method="POST" id="registerForm">
+        <label for="regUsername">Username</label>
+        <input type="text" name="username" required>
+
+        <label for="regEmail">Email</label>
+        <input type="email" name="email" required>
+
+        <label for="regPassword">Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+          <p>&copy; 2025 Keyword-Based Search Engine. All rights reserved.</p>
+          <p>Developed by Final Year BSCS Student | Supervised by Sir Muhammad Ilyas</p>
+        </div>
+      </footer>
+
+    <script>
+          function showMessage(message, isSuccess) {
+                let msgDiv = document.getElementById("successMessage");
+                msgDiv.innerText = message;
+                msgDiv.style.display = "block";
+                msgDiv.style.backgroundColor = isSuccess ? "#4CAF50" : "red";
+            
+                setTimeout(() => {
+                    msgDiv.style.display = "none";
+                    if (isSuccess) location.reload();
+                }, 2000);
+            } 
+        document.addEventListener("DOMContentLoaded", function () {
+            let registerForm = document.getElementById("registerForm");
+        
+            if (registerForm) {
+                registerForm.addEventListener("submit", function (event) {
+                    event.preventDefault();
+        
+                    let formData = new FormData(this);
+        
+                    fetch("/register", { 
+                        method: "POST",  
+                        body: formData
+                    })
+                    .then(response => response.json())  
+                    .then(data => {
+                        if (data.status === "success") {
+                            showMessage("Success: " +data.message, true);
+                            setTimeout(() => {
+                                window.location.href = "/login";
+                            }, 1000);
+                        } else {
+                            showMessage("Error: " +data.message, false);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Fetch Error:", error);
+                        showMessage("An error occurred. Please try again.", false);
+                    });
+                });
+            }
+        });
+        </script>
+        
+</body>
+</html>
